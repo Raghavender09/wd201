@@ -1,54 +1,51 @@
-const http=require("http");
-const fs=require("fs");
+const http = require('http');
+const fs = require('fs');
+const args = require('minimist')(process.argv.slice(2));
 
+let homePage;
+let projectPage;
+let registrationPage;
+let registrationScript;
 
+fs.readFile("home.html", (err, data) => {
+    if (err) throw err;
+    homePage = data.toString();
+})
 
-let homecontent="";
-let projectcontent="";
-let registrationcon="";
+fs.readFile("project.html", (err, data) => {
+    if (err) throw err;
+    projectPage = data.toString();
+})
 
-fs.readFile("home.html",(err,data)=>{
-    if(err) throw err;
-   homecontent=data;
+fs.readFile("registration.html", (err, data) => {
+    if (err) throw err;
+    registrationPage = data.toString();
+})
 
-    });
-fs.readFile("project.html",(err,info)=>{
-if(err) throw err;
-projectcontent=info;
-});
+fs.readFile("registration.js", (err, data) => {
+    if (err) throw err;
+    registrationScript = data.toString();
+})
 
-fs.readFile("registration.html",(err,info1)=>
-{
-    if(err) throw err;
-    registrationcon=info1;
-
-});
-
-
-const args=require("minimist")(process.argv.slice(2));
-
-http.createServer((request,res)=>{
-    let url=request.url;
-  
-    
-    res.writeHeader(200,{"content-type":"text/html"});
-    switch(url)
-    {
-        case "/project.html":
-            res.write(projectcontent);
-            res.end();
-            
+http.createServer((request, response) => {
+    let url = request.url;
+    response.writeHead(200, {'Content-Type': 'text/html'});
+    switch (url) {
+        case "/project":
+            response.write(projectPage);
+            response.end();
             break;
-        case "/registration.html":
-            res.write(registrationcon);
-            res.end();
+        case "/registration":
+            response.write(registrationPage);
+            response.end();
+            break;
+        case "/registration.js":
+            response.write(registrationScript);
+            response.end();
             break;
         default:
-            res.write(homecontent);
-            res.end();
+            response.write(homePage);
+            response.end();
             break;
     }
-    
-
-    
-}).listen(args);
+}).listen(args.port);
